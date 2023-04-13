@@ -1,0 +1,64 @@
+import pygame
+import random
+
+# Ekran boyutları
+GENISLIK = 800
+YUKSEKLIK = 600
+BLOK_BOYUTU = 30
+
+# Renkler
+SIYAH = (0, 0, 0)
+BEYAZ = (255, 255, 255)
+KIRMIZI = (255, 0, 0)
+YESIL = (0, 255, 0)
+MAVI = (0, 0, 255)
+SARI = (255, 255, 0)
+
+# Tetris blokları ve şekilleri
+BLOKLAR = [
+    [[1, 1, 1, 1]],
+    [[1, 1, 1, 0], [1]],
+    [[1, 1, 1, 0], [0, 0, 1]],
+    [[1, 1, 0, 0], [0, 1]],
+    [[1, 1, 0, 0], [1, 0, 0]],
+    [[1, 1, 0], [0, 1, 0]],
+    [[1, 1, 0], [0, 0, 1]]
+]
+
+# Tetris oyun sınıfı
+class Tetris:
+    def __init__(self):
+        self.ekran = pygame.display.set_mode((GENISLIK, YUKSEKLIK))
+        pygame.display.set_caption("Hayvan Tetris")
+        self.clock = pygame.time.Clock()
+        self.oyun_alani = [[0] * (GENISLIK // BLOK_BOYUTU) for _ in range(YUKSEKLIK // BLOK_BOYUTU)]
+        self.blok = self.yeni_blok()
+        self.blok_x = GENISLIK // 2 - len(self.blok[0]) * BLOK_BOYUTU // 2
+        self.blok_y = 0
+        self.puan = 0
+
+    def yeni_blok(self):
+        return random.choice(BLOKLAR)
+
+    def blok_ciz(self, blok, x, y):
+        for i, row in enumerate(blok):
+            for j, cell in enumerate(row):
+                if cell:
+                    pygame.draw.rect(self.ekran, KIRMIZI, (x + j * BLOK_BOYUTU, y + i * BLOK_BOYUTU, BLOK_BOYUTU, BLOK_BOYUTU))
+
+    def oyun_alani_ciz(self):
+        for i, row in enumerate(self.oyun_alani):
+            for j, cell in enumerate(row):
+                if cell:
+                    pygame.draw.rect(self.ekran, YESIL, (j * BLOK_BOYUTU, i * BLOK_BOYUTU, BLOK_BOYUTU, BLOK_BOYUTU), 1)
+
+    def oyun_alani_guncelle(self):
+        for i, row in enumerate(self.blok):
+            for j, cell in enumerate(row):
+                if cell:
+                    self.oyun_alani[self.blok_y // BLOK_BOYUTU + i][self.blok_x // BLOK_BOYUTU + j] = 1
+
+    def blok_hareket(self, dx):
+        self.blok_x += dx
+        if self.carpisma_kontrol():
+            self.blok
